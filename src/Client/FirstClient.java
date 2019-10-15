@@ -1,38 +1,27 @@
 package Client;
 
-import java.net.InetAddress;
-
 import Account.BankAccount;
-import Spread.SpreadGroup;
-import Spread.SpreadMessage;
-public class FirstClient  {
-	
-	public void getQuickBalance() {
-		
-	}
-	
+
+public class FirstClient {
+
 	public static void main(String[] args) {
-	BankAccount connection = new BankAccount();
-	SpreadGroup group = new SpreadGroup();
-	
-	try {
 		
-	connection.connect(InetAddress.getByName("localhost"),4803,"privatename",false,true);
-	group.join(connection, "UIO");
-	SpreadMessage message = connection.receive();
-	System.out.println("Newmembershipmessage "+message.getMembershipInfo().getGroup());
+		try {
+			
+			// Get arguments
+			String host = args[0];
+			String accountName = args[1];
+			int numReplicas = Integer.parseInt(args[2]);
 
-
-
-	//connection.disconnect();
+			
+			// Create a replica account and run it
+			BankAccount bankAccount = new BankAccount(host, accountName, numReplicas);
+			bankAccount.run();
+			
+		} catch(Exception e) {
+			System.out.println("Usage:\n"
+				+ "\tjava AccountReplica <server address> <account name> <number of replicas> [file name]");
+			e.printStackTrace();
+		}
 	}
-	catch(Exception e) {
-		System.out.println("Exception is "+ e);
-		
-	}
-	}
-
-	
-
-
 }
