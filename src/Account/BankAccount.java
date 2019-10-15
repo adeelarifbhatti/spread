@@ -17,7 +17,7 @@ import Spread.SpreadMessage;
 import Spread.MembershipInfo;
 
 public class BankAccount implements BasicMessageListener {
-	private double balance;
+	
 	private boolean isRun;
 	private SpreadConnection sConnection;
 	private SpreadGroup sGroup;
@@ -25,6 +25,7 @@ public class BankAccount implements BasicMessageListener {
 	private int instances;
 	private int presentMemebers;
 	private BufferedReader reader;
+	private AccountOperations accountOperations=new AccountOperations();
 	
 	public BankAccount(String host, String accounterName, int instances) {
 		upDate("New BankAccount Replica host:" + host + ", accounterName:" + accounterName + ", numReplicas: " + instances);	
@@ -33,15 +34,13 @@ public class BankAccount implements BasicMessageListener {
 		if ( initSpread(host, 4803, accounterName) ) {
 		
 			// Init variables
-			balance = 0.0;
+			accountOperations.setBalance(0.0);
 			presentMemebers = 0;
 			isRun = true;
 			this.instances = instances;	
 		}
 	}
-	private void balance() {
-		System.out.println("balance=" + balance);
-	}
+
 	
 	private void upDate(String message) {
 		System.out.println("[Info] " + message);
@@ -79,14 +78,8 @@ public class BankAccount implements BasicMessageListener {
 		}
 	}
 	
-	private void setBalance(double amount) {
-		balance += amount;
-		System.out.println("New balance=" + balance);
-	}
-	private void addinginterest(double percent) {
-		balance *= (1 + percent/100);
-		System.out.println("New balance=" + balance);
-	}
+
+
 	private void sleeping(int duration) {
 		try {
 			Thread.sleep(duration * 1000);
@@ -103,7 +96,7 @@ public class BankAccount implements BasicMessageListener {
 		try {
 	        switch(line) {
 		        case "balance":
-		        	balance();
+		        	accountOperations.balance();
 		        	break;
 		        case "exit":
 		        	bye();
@@ -114,25 +107,25 @@ public class BankAccount implements BasicMessageListener {
 		        	switch (options[0]) {
 		        		case "balance":
 		        			amount = Double.parseDouble(options[1]);
-		        			if (balance == 0) {
-		        				balance += amount;
-		        				System.out.println("New balance=" + balance);
+		        			if (accountOperations.getBalance() == 0) {
+		        				accountOperations.setBalance(amount);
+		        				System.out.println("New balance=" + accountOperations.getBalance());
 		        			}
 		        			break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				    		if (isCommand) messageSending("deposit " + amount);
-				    		else setBalance(amount);
+				    		else accountOperations.setBalance(amount);
 				        	break;
 				        case "withdraw":
 				        	amount = Double.parseDouble(options[1]);
 				        	if (isCommand) messageSending("withdraw " + amount);
-				        	else setBalance(amount * (-1));
+				        	else accountOperations.setBalance(amount * (-1));
 				        	break;
 				        case "addinterest":
 				        	double percent = Double.parseDouble(options[1]);
 				        	if (isCommand) messageSending("addinterest " + percent);
-				        	else addinginterest(percent);
+				        	else accountOperations.addinginterest(percent);
 				        	break;
 				        case "sleep":
 				        	int duration = Integer.parseInt(options[1]);
@@ -226,7 +219,7 @@ public class BankAccount implements BasicMessageListener {
 //					System.out.println("joind=" + joined.toString() + ", myName:" + privateName);	
 					CharSequence cs = memberName;
 					if (!info.getJoined().toString().contains(cs)) {
-						messageSending("balance " + balance);
+						messageSending("balance " + accountOperations.getBalance());
 					}
 				}	else if(info.isCausedByLeave()) {
 					System.out.println("\tLEAVE of " + info.getLeft());
