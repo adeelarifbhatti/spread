@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import Account.BankAccount;
 import Spread.SpreadGroup;
 import Spread.SpreadMessage;
-public class FirstClient  {
+public class SecondClient  {
 	
 	public void getQuickBalance() {
 		
