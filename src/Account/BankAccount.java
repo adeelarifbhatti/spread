@@ -14,6 +14,7 @@ import Spread.BasicMessageListener;
 import Spread.SpreadConnection;
 import Spread.SpreadGroup;
 import Spread.SpreadMessage;
+import Spread.MembershipInfo;
 
 public class BankAccount implements BasicMessageListener {
 	private double balance;
@@ -97,7 +98,7 @@ public class BankAccount implements BasicMessageListener {
 		System.out.println("[Error] in " + tag + ": " + type + " " + e.getMessage());
 	}
 
-	public void enterUser(String line, boolean isCommand) {
+	public void userCommand(String line, boolean isCommand) {
 		
 		try {
 	        switch(line) {
@@ -171,8 +172,84 @@ public class BankAccount implements BasicMessageListener {
 
 	@Override
 	public void messageReceived(SpreadMessage message) {
-		// TODO Auto-generated method stub
+
+		if (message.isRegular()) {
+			messageReceivedRegular(message);
+		}
+		else if (message.isMembership()) {
+			messageReceivedMembership(message);
+		}
+		else if (message.isReject()) {
+			upDate("Receive a rejected message.");
+		}
+		else {
+			upDate("Receive a unkown message.");
+		}		
 		
+	}
+	private void messageReceivedRegular(SpreadMessage message) {
+		
+		if(message.isSafe()) {
+			upDate("Receive a regular save message.");
+		
+			byte data[] = message.getData();
+			String content = new String(data);
+			
+			System.out.println("\t data: " + data.length + " bytes, sender: " + message.getSender() + ", type: " + message.getType());
+			System.out.println("\tcontent: " + content);
+			
+			userCommand(content, false);
+		}
+		else {
+			upDate("Receive another regular message");
+		}
+	}
+	private void messageReceivedMembership(SpreadMessage message) {
+		if(message.isMembership()) {
+			
+			MembershipInfo info = message.getMembershipInfo();
+			SpreadGroup group = info.getGroup();
+			
+			// ---------------- regular membership ----------------------------
+			if (info.isRegularMembership()) {
+				SpreadGroup members[] = info.getMembers();
+				//GroupID groupID = info.getGroupID();
+				
+				upDate("Receive a membership message for group " + group + " with " + members.length + " members:");
+				for(SpreadGroup member : members) {
+					System.out.println("\t\t" + member);	
+				}
+				
+				if(info.isCausedByJoin()) {
+					System.out.println("\tJOIN of " + info.getJoined());
+
+//					System.out.println("joind=" + joined.toString() + ", myName:" + privateName);	
+					CharSequence cs = memberName;
+					if (!info.getJoined().toString().contains(cs)) {
+						messageSending("balance " + balance);
+					}
+				}	else if(info.isCausedByLeave()) {
+					System.out.println("\tLEAVE of " + info.getLeft());
+				}	else if(info.isCausedByDisconnect()) {
+					System.out.println("\tDISCONNECT of " + info.getDisconnected());
+				} else if(info.isCausedByNetwork()) {
+					System.out.println("\tNETWORK change");
+				}
+				
+				
+				presentMemebers = members.length;
+//				System.out.println("number of current replicas " + numGroupMembers + ", number of wanted replicas " + numReplicas);
+			}
+			// ---------------- transition membership -------------------------
+			else if(info.isTransition()) {
+				upDate("Receive a transition membership message for group " + group);
+			}
+			// ---------------- self-leave membership -------------------------
+			else if(info.isSelfLeave()) {
+				upDate("Receive a self-leav membership message for group " + group);
+			}
+
+		}
 	}
 	
 	public void run() {
@@ -196,7 +273,7 @@ public class BankAccount implements BasicMessageListener {
 							try {
 							line = reader.readLine();
 							if (line != null) {
-								enterUser(line, true);
+								userCommand(line, true);
 							} else {
 								break;
 							}
