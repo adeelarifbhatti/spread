@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * Objects of a class that implements the SpreadAuthInterface interface can

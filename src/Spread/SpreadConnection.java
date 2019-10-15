@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 import java.net.*;
 import java.io.*;

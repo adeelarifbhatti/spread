@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * A MessageFactory object is used to create any number of messages based on a default message.

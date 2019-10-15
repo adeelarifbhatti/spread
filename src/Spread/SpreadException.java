@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * A SpreadException is thrown whenever a problem occurs in a spread method.

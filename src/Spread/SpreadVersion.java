@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * A SpreadVersion object is used to get the version of spread that is being used.

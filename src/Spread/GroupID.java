@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * A GroupID represents a particular group membership view at a particular time in the history of the group.

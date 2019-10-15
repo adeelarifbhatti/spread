@@ -34,7 +34,7 @@
  */
 
 
-package spread;
+package Spread;
 
 /**
  * NULL authentication module. This does NO authentication and just allows the connection.
