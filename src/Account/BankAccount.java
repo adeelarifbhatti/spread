@@ -110,7 +110,7 @@ public class BankAccount implements BasicMessageListener {
 		        			}
 		        			break;
 				        case "getQuickBalance":
-				        	accountOperations.getBalance();
+				        	System.out.println("New balance=" + accountOperations.getBalance());
 				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
