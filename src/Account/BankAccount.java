@@ -31,11 +31,11 @@ public class BankAccount implements BasicMessageListener {
 	private ArrayList<String> membersInfo = new ArrayList<>();
 	private AccountOperations accountOperations=new AccountOperations();
 	
-	public BankAccount(String host, String accounterName, int instances) {
-		upDate("New BankAccount Replica host:" + host + ", accounterName:" + accounterName + ", numReplicas: " + instances);	
+	public BankAccount(String host, String accountname, int instances) {
+		upDate("New BankAccount Replica host:" + host + ", accountname:" + accountname + ", numReplicas: " + instances);	
 		
 		// Init spread
-		if ( initSpread(host, 4803, accounterName) ) {
+		if ( initSpread(host, 4803, accountname) ) {
 		
 			// Init variables
 			accountOperations.setBalance(0.0);
@@ -84,13 +84,6 @@ public class BankAccount implements BasicMessageListener {
 	
 
 
-	private void sleeping(int duration) {
-		try {
-			Thread.sleep(duration * 1000);
-		} catch (InterruptedException e) {
-			errorHandler("commandSleep", "InterruptedException", e);
-		}
-	}
 	private void errorHandler(String tag, String type, Exception e) {
 		System.out.println("[Error] in " + tag + ": " + type + " " + e.getMessage());
 	}
@@ -116,6 +109,9 @@ public class BankAccount implements BasicMessageListener {
 		        				System.out.println("New balance=" + accountOperations.getBalance());
 		        			}
 		        			break;
+				        case "getQuickBalance":
+				        	accountOperations.getBalance();
+				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				    		if (isCommand) messageSending("deposit " + amount);
