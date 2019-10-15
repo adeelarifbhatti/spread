@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import Spread.SpreadException;
@@ -25,6 +28,7 @@ public class BankAccount implements BasicMessageListener {
 	private int instances;
 	private int presentMemebers;
 	private BufferedReader reader;
+	private ArrayList<String> membersInfo = new ArrayList<>();
 	private AccountOperations accountOperations=new AccountOperations();
 	
 	public BankAccount(String host, String accounterName, int instances) {
@@ -127,6 +131,10 @@ public class BankAccount implements BasicMessageListener {
 				        	if (isCommand) messageSending("addinterest " + percent);
 				        	else accountOperations.addinginterest(percent);
 				        	break;
+				        case "memberInfo":
+				        	System.out.println(membersInfo);
+				        	break;
+
 				        case "sleep":
 				        	int duration = Integer.parseInt(options[1]);
 				        	sleeping(duration);
@@ -210,21 +218,23 @@ public class BankAccount implements BasicMessageListener {
 				
 				upDate("Receive a membership message for group " + group + " with " + members.length + " members:");
 				for(SpreadGroup member : members) {
-					System.out.println("\t\t" + member);	
+					System.out.println("\t\t" + member);
 				}
 				
 				if(info.isCausedByJoin()) {
 					System.out.println("\tJOIN of " + info.getJoined());
-
-//					System.out.println("joind=" + joined.toString() + ", myName:" + privateName);	
+					membersInfo.add(info.getJoined().toString());
+					//					System.out.println("joind=" + joined.toString() + ", myName:" + privateName);	
 					CharSequence cs = memberName;
 					if (!info.getJoined().toString().contains(cs)) {
 						messageSending("balance " + accountOperations.getBalance());
 					}
 				}	else if(info.isCausedByLeave()) {
 					System.out.println("\tLEAVE of " + info.getLeft());
+					membersInfo.remove(info.getLeft().toString());
 				}	else if(info.isCausedByDisconnect()) {
 					System.out.println("\tDISCONNECT of " + info.getDisconnected());
+					membersInfo.remove(info.getDisconnected().toString());
 				} else if(info.isCausedByNetwork()) {
 					System.out.println("\tNETWORK change");
 				}
