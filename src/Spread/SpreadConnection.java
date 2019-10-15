@@ -98,7 +98,7 @@ public class SpreadConnection
 
         // The class name of the default authentication method
         //////////////////////////////////////////////////////
-	private static final String DEFAULT_AUTHCLASS_NAME = "spread.NULLAuth";
+	private static final String DEFAULT_AUTHCLASS_NAME = "Spread.NULLAuth";
 
 	// The maximum length of a authentication method name
 	/////////////////////////////////////////////////////
