@@ -144,7 +144,7 @@ public class BankAccount implements BasicMessageListener {
 	private boolean initSpread(String host, int port, String groupName) {
 		Random randomGenerator = new Random();
 		int randomInt = randomGenerator.nextInt(100);
-		memberName =  "DoRo" + randomInt;
+		memberName =  "Instance" + randomInt;
 		
 		sConnection = new SpreadConnection();
 		sGroup = new SpreadGroup();

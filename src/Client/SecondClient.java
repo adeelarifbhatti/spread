@@ -20,7 +20,7 @@ public class SecondClient {
 			
 		} catch(Exception e) {
 			System.out.println("Usage:\n"
-				+ "\tjava AccountReplica <server address> <account name> <number of replicas> [file name]");
+				+ "\tjava BankAccount <server address> <account name> <number of replicas>");
 			e.printStackTrace();
 		}
 	}
