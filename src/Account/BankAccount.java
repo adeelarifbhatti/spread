@@ -135,10 +135,6 @@ public class BankAccount implements BasicMessageListener {
 				        	System.out.println(membersInfo);
 				        	break;
 
-				        case "sleep":
-				        	int duration = Integer.parseInt(options[1]);
-				        	sleeping(duration);
-				        	break;
 					}
 		        	break;
 	        }
