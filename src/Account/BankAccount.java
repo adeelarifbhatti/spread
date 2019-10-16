@@ -31,9 +31,8 @@ public class BankAccount implements BasicMessageListener {
 	private int presentMemebers;
 	private BufferedReader reader;
 	private List<Transaction> executed_list= new ArrayList<Transaction>();
-	private Collection<Transaction> outstanding_collection = new ArrayList<Transaction>();
+	private List<Transaction> outstanding_collection = new ArrayList<Transaction>();
 	private int order_counter=0, outstanding_counter=0;
-	List<Transaction> collect= new ArrayList<Transaction>();
 	private ArrayList<String> membersInfo = new ArrayList<>();
 	private AccountOperations accountOperations=new AccountOperations();
 	
@@ -95,7 +94,7 @@ public class BankAccount implements BasicMessageListener {
 		try {
 			sConnection.multicast(message);
 			upDate("Sent safe message");
-			System.out.println("From ADEEL ####### "+ collect.get(outstanding_counter-1).command);
+			System.out.println("From ADEEL ####### "+ outstanding_collection.get(outstanding_counter).command);
 			System.out.println("From ADEEL ####### "+ outstanding_counter);
 		} catch (SpreadException e) {
 			errorHandler("messageSend", "SpreadException", e);
@@ -150,23 +149,23 @@ public class BankAccount implements BasicMessageListener {
 				           	 * so next time someone deposits it gets on zero index and same index could be added again to
 				           	 * collection
 				           	 */
-				           	outstanding_collection.add(executed_list.get(0));
-				           	executed_list.clear();
+				           	outstanding_collection.add(executed_list.get(outstanding_counter));
+				           	//executed_list.clear();
 				           	/*
 				           	 * printing the following to check if the collection's size increased or not
 				           	 */
-				           	System.out.println("From Collection " +outstanding_collection.size());
+				           	System.out.println("From Collection " +outstanding_collection.get(outstanding_counter).command);
 				           	/*
 				           	 * I could not get the values from the collection to send to messageSending() method for some reason,
 				           	 * so I am defining defining a new list for extracting the values from Collection and sending them to 
 				           	 * messageSending(...) method, Why can't I get the values from collection ??
 				           	 */
 				           	
-				           	collect.addAll(outstanding_collection);
+				       
 				           	/*
 				           	 * I am also using outstanding_counter for accessing index i.e. usually the famous int variable i would do !
 				           	 */
-				           	System.out.println("From Collection value by  " +collect.get(outstanding_counter).command);
+				           	System.out.println("From Collection value by  " +outstanding_collection.get(outstanding_counter).command);
 				           	
 				           	/*
 				           	 * next step should be to send collect.get(outstanding_counter).command to send and also 
@@ -180,10 +179,12 @@ public class BankAccount implements BasicMessageListener {
 				           	 * and we want the previous index value
 				           	 */
 				    		if (isCommand) {
-				    			newMessageSending(collect.get(outstanding_counter).command);
-				    			outstanding_counter=outstanding_counter+1;
+				    			newMessageSending(outstanding_collection.get(outstanding_counter).command);
+				    			System.out.println("Value of outstanding_counter, From isCommand "+outstanding_counter);
+				    			
 				    		}
 				    		else accountOperations.setBalance(amount);
+				    		outstanding_counter=outstanding_counter+1;
 				        	break;
 				        case "withdraw":
 				        	amount = Double.parseDouble(options[1]);
