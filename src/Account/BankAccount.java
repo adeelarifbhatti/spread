@@ -125,8 +125,11 @@ public class BankAccount implements BasicMessageListener {
 				           	System.out.println("Values for testing " +executed_list.get(0).command + " " + executed_list.get(0).unique_id);
 				           	System.out.println("Value of outstanding_counter "+outstanding_counter);
 				           	outstanding_collection.add(executed_list.get(0));
+				           	executed_list.clear();
 				           	System.out.println("From Collection " +outstanding_collection.size());
-				           	System.out.println("From Collection value by  " +outstanding_collection.toArray()[outstanding_counter].toString());
+				           	List<Transaction> collect= new ArrayList<Transaction>();
+				           	collect.addAll(outstanding_collection);
+				           	System.out.println("From Collection value by  " +collect.get(outstanding_counter).command);
 				           	outstanding_counter++;
 				    		if (isCommand) messageSending("deposit " + amount);
 				    		else accountOperations.setBalance(amount);
