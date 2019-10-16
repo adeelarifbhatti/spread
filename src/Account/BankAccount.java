@@ -119,18 +119,46 @@ public class BankAccount implements BasicMessageListener {
 				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
+				        	/*
+				        	 * // following adds theTransaction.command = “<Command name> <argument value>”; 
+				        	 *  (Ex: “deposit 500”)Transaction.unique_id = “<Client_instance_name> <outstanding_counter>” 
+				        	 */
 				           	executed_list.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
 				           	
-				           	
+				           	/*
+				           	 * Printing the values to check if they have the right values
+				           	 */
 				           	System.out.println("Values for testing " +executed_list.get(0).command + " " + executed_list.get(0).unique_id);
 				           	System.out.println("Value of outstanding_counter "+outstanding_counter);
+				           	/*
+				           	 * Assigning the value at zero index to collection and then clear() the executed_list
+				           	 * so next time someone deposits it gets on zero index and same index could be added again to
+				           	 * collection
+				           	 */
 				           	outstanding_collection.add(executed_list.get(0));
 				           	executed_list.clear();
+				           	/*
+				           	 * printing the following to check if the collection's size increased or not
+				           	 */
 				           	System.out.println("From Collection " +outstanding_collection.size());
+				           	/*
+				           	 * I could not get the values from the collection to send to messageSending() method for some reason,
+				           	 * so I am defining defining a new list for extracting the values from Collection and sending them to 
+				           	 * messageSending(...) method, Why can't I get the values from collection ??
+				           	 */
 				           	List<Transaction> collect= new ArrayList<Transaction>();
 				           	collect.addAll(outstanding_collection);
+				           	/*
+				           	 * I am also using outstanding_counter for accessing index i.e. usually the famous int variable i would do !
+				           	 */
 				           	System.out.println("From Collection value by  " +collect.get(outstanding_counter).command);
 				           	outstanding_counter++;
+				           	/*
+				           	 * next step should be to send collect.get(outstanding_counter).command to send and also 
+				           	 * use collect.get(outstanding_counter).unique_id or collect.get(outstanding_counter) to determine
+				           	 * which transaction are executed and which aren't, and this detail should be stored in a separate list/collection
+				           	 * for checkTxStatus and getHistory methods/commands
+				           	 */
 				    		if (isCommand) messageSending("deposit " + amount);
 				    		else accountOperations.setBalance(amount);
 				        	break;
