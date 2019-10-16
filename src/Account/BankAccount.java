@@ -159,7 +159,12 @@ public class BankAccount implements BasicMessageListener {
 				           	 * which transaction are executed and which aren't, and this detail should be stored in a separate list/collection
 				           	 * for checkTxStatus and getHistory methods/commands
 				           	 */
-				    		if (isCommand) messageSending("deposit " + amount);
+				           	
+				           	/*
+				           	 *  Following has (outstanding_counter-1) because outstanding_counter got incremented by outstanding_counter++
+				           	 * and we want the previous index value
+				           	 */
+				    		if (isCommand) messageSending(collect.get(outstanding_counter-1).command);
 				    		else accountOperations.setBalance(amount);
 				        	break;
 				        case "withdraw":
