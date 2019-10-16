@@ -31,7 +31,7 @@ public class BankAccount implements BasicMessageListener {
 	private int presentMemebers;
 	private BufferedReader reader;
 	private List<Transaction> executed_list= new ArrayList<Transaction>();
-	private Collection<Transaction> outstanding_collection = new ArrayList();
+	private Collection<Transaction> outstanding_collection = new ArrayList<Transaction>();
 	private int order_counter=0, outstanding_counter=0;
 	private ArrayList<String> membersInfo = new ArrayList<>();
 	private AccountOperations accountOperations=new AccountOperations();
@@ -120,12 +120,14 @@ public class BankAccount implements BasicMessageListener {
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				           	executed_list.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
-				           	outstanding_counter++;
+				           	
 				           	
 				           	System.out.println("Values for testing " +executed_list.get(0).command + " " + executed_list.get(0).unique_id);
 				           	System.out.println("Value of outstanding_counter "+outstanding_counter);
 				           	outstanding_collection.add(executed_list.get(0));
 				           	System.out.println("From Collection " +outstanding_collection.size());
+				           	System.out.println("From Collection value by  " +outstanding_collection.toArray()[outstanding_counter].toString());
+				           	outstanding_counter++;
 				    		if (isCommand) messageSending("deposit " + amount);
 				    		else accountOperations.setBalance(amount);
 				        	break;
