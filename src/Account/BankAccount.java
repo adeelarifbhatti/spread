@@ -187,6 +187,11 @@ public class BankAccount implements BasicMessageListener {
 				        case "memberInfo":
 				        	System.out.println(membersInfo);
 				        	break;
+				        case "getSyncedBalance":
+				        	if(outstanding_collection.isEmpty())
+				        	System.out.println("New balance=" + accountOperations.getBalance());
+				        	else executeTenSeconds(outstanding_collection);
+				        	break;
 
 					}
 		        	break;
@@ -213,6 +218,7 @@ public class BankAccount implements BasicMessageListener {
 		messageSending(localList.get(i).command);
 		executed_list.add(localList.get(i));
 		outstanding_collection.remove(t);
+		System.out.println("New balance=" + accountOperations.getBalance());
 		}
 		
 	}
