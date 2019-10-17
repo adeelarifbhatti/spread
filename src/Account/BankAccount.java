@@ -179,9 +179,10 @@ public class BankAccount implements BasicMessageListener {
 				        	else accountOperations.setBalance(amount * (-1));
 				        	break;
 				        case "addinterest":
-				        	double percent = Double.parseDouble(options[1]);
-				        	if (isCommand) messageSending("addinterest " + percent);
-				        	else accountOperations.addinginterest(percent);
+				        	amount = Double.parseDouble(options[1]);
+				        	outstanding_collection.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
+				        	outstanding_counter=outstanding_counter+1;
+				        	executeTenSeconds(outstanding_collection);
 				        	break;
 				        case "memberInfo":
 				        	System.out.println(membersInfo);
