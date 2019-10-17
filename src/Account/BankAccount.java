@@ -116,18 +116,40 @@ public class BankAccount implements BasicMessageListener {
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				    			accountOperations.setBalance(amount);
+					        	Transaction t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+					        	System.out.println("###############################################################"+t.command +" "+ t.unique_id);
+					        	executed_list.add(t);
+					        	outstanding_collection.remove(t);
+					        	break;
+				        					        	
+				      /*  case "uniqueid":
+				        	amount = Double.parseDouble(options[1]);
+				        	Transaction t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+				        	executed_list.add(t);
+				        	outstanding_collection.remove(t);
 				        	break;
+				        	*/
+				        	
 				        case "withdraw":
 				        	amount = Double.parseDouble(options[1]);
 				        	 accountOperations.setBalance(amount * (-1));
 				        	break;
+				        	
 				        case "addinterest":
+				        	System.out.println("From Interest  from start #########"+ options[1]+" "+options[2]);
 				        	double percent = Double.parseDouble(options[1]);
 				        	accountOperations.addinginterest(percent);
+				        	Transaction t2= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+				        	System.out.println("#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###########"+t2.command +" "+ t2.unique_id);
+				        	executed_list.add(t2);
+				        	outstanding_collection.remove(t2);
 				        	break;
-				        case "memberInfo":
+				        	
+				        	case "memberInfo":
 				        	System.out.println(membersInfo);
 				        	break;
+				        	default:
+				        		System.out.println(" Nothing Matched " + options[0]);
 
 					}
 		        	break;
@@ -166,11 +188,11 @@ public class BankAccount implements BasicMessageListener {
 				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
-				        	outstanding_collection.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
+				        	outstanding_collection.add(new Transaction("deposit "+ amount, "uniqueid " + memberName+outstanding_counter));
 				        	outstanding_counter=outstanding_counter+1;
 				        	
 				        	
-				        	executeTenSeconds(outstanding_collection);
+				        	messageSending(outstanding_collection);
 
 				        	break;
 				        case "withdraw":
@@ -178,10 +200,16 @@ public class BankAccount implements BasicMessageListener {
 				        	if (isCommand) messageSending("withdraw " + amount);
 				        	else accountOperations.setBalance(amount * (-1));
 				        	break;
+				        	
 				        	case "checkTXstatus":
 				        	boolean executed = false;
+		        			System.out.println("#################################"+options[1] );
 				        	for (int i=0;i<executed_list.size();i++) {
-				        		if(options[1].equals(executed_list.get(i).unique_id)) {
+				        		String[] id=executed_list.get(i).unique_id.split(" ");
+				        		System.out.println("#################################"+executed_list.get(i).unique_id);
+				        		if(options[1].equals(id[1])) {
+				        			
+
 				        			executed = true;
 				        		}
 				        	}
@@ -193,9 +221,10 @@ public class BankAccount implements BasicMessageListener {
 				        	}
 				        case "addinterest":
 				        	amount = Double.parseDouble(options[1]);
-				        	outstanding_collection.add(new Transaction("addinterest "+ amount, memberName+outstanding_counter));
+				        	outstanding_collection.add(new Transaction("addinterest "+ amount,"uniqueid " +  memberName+outstanding_counter));
 				        	outstanding_counter=outstanding_counter+1;
-				        	executeTenSeconds(outstanding_collection);
+				        	messageSending(outstanding_collection);
+				        	System.out.println("#################################"+options[0]+ " " +outstanding_collection.get(0).command );
 				        	break;
 				        case "memberInfo":
 				        	System.out.println(membersInfo);
@@ -203,7 +232,7 @@ public class BankAccount implements BasicMessageListener {
 				        case "getSyncedBalance":
 				        	if(outstanding_collection.isEmpty())
 				        	System.out.println("New balance=" + accountOperations.getBalance());
-				        	else executeTenSeconds(outstanding_collection);
+				        	else messageSending(outstanding_collection);
 				        	break;
 
 					}
@@ -219,13 +248,13 @@ public class BankAccount implements BasicMessageListener {
 	
 	
 	
-	private void executeTenSeconds(List<Transaction> localList) {
-     /*   try {
+	/*private void executeTenSeconds(List<Transaction> localList) {
+        try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        */
+        
 		for(int i=0;i<localList.size();i++) {
 			Transaction t=localList.get(i);
 		messageSending(localList.get(i).command);
@@ -233,8 +262,46 @@ public class BankAccount implements BasicMessageListener {
 		outstanding_collection.remove(t);
 		System.out.println("New balance=" + accountOperations.getBalance());
 		}
-		
 	}
+	*/
+		
+		private void messageSending(List<Transaction> localList) {
+			//SpreadMessage message = new SpreadMessage();
+			SpreadMessage message2 = new SpreadMessage();
+			//message.setSafe();
+			//message.addGroup(sGroup);
+			message2.setSafe();
+			message2.addGroup(sGroup);
+			for(int i=0;i<localList.size();i++) {
+				/* Transaction t=localList.get(i);
+				
+					outstanding_collection.remove(t);
+				
+				*/
+				//String content =(String)localList.get(i).command;
+				//message.setData(new String(content).getBytes());
+				
+				String content2 =(String)localList.get(i).command+ " "+localList.get(i).unique_id;
+				message2.setData(new String(content2).getBytes());
+				
+
+			//executed_list.add(localList.get(i));
+		
+			System.out.println("New balance=" + accountOperations.getBalance());
+			}
+			
+			try {
+				//sConnection.multicast(message);
+				sConnection.multicast(message2);
+				upDate("Sent safe message");
+			} catch (SpreadException e) {
+				errorHandler("messageSend", "SpreadException", e);
+			}
+			}
+		
+		
+		
+	
 	private boolean initSpread(String host, int port, String groupName) {
 		Random randomGenerator = new Random();
 		int randomInt = randomGenerator.nextInt(100);
