@@ -178,9 +178,22 @@ public class BankAccount implements BasicMessageListener {
 				        	if (isCommand) messageSending("withdraw " + amount);
 				        	else accountOperations.setBalance(amount * (-1));
 				        	break;
+				        	case "checkTXstatus":
+				        	boolean executed = false;
+				        	for (int i=0;i<executed_list.size();i++) {
+				        		if(options[1].equals(executed_list.get(i).unique_id)) {
+				        			executed = true;
+				        		}
+				        	}
+				        	
+				        	if(executed) {
+				        		System.out.println(options[1]+ " has been executed");
+				        	}else {
+				        		System.out.println(options[1]+ " is still pending");
+				        	}
 				        case "addinterest":
 				        	amount = Double.parseDouble(options[1]);
-				        	outstanding_collection.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
+				        	outstanding_collection.add(new Transaction("addinterest "+ amount, memberName+outstanding_counter));
 				        	outstanding_counter=outstanding_counter+1;
 				        	executeTenSeconds(outstanding_collection);
 				        	break;
