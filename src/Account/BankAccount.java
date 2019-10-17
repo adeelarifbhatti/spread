@@ -86,25 +86,58 @@ public class BankAccount implements BasicMessageListener {
 			errorHandler("messageSend", "SpreadException", e);
 		}
 	}
-	private void newMessageSending(String content) {
-		SpreadMessage message = new SpreadMessage();
-		message.setSafe();
-		message.addGroup(sGroup);
-		message.setData(new String(content).getBytes());
-		try {
-			sConnection.multicast(message);
-			upDate("Sent safe message");
-			System.out.println("From ADEEL ####### "+ outstanding_collection.get(outstanding_counter).command);
-			System.out.println("From ADEEL ####### "+ outstanding_counter);
-		} catch (SpreadException e) {
-			errorHandler("messageSend", "SpreadException", e);
-		}
-	}
-	
-
-
 	private void errorHandler(String tag, String type, Exception e) {
 		System.out.println("[Error] in " + tag + ": " + type + " " + e.getMessage());
+	}
+	public void userCommand(String line) {
+		
+		try {
+	        switch(line) {
+		        case "balance":
+		        	accountOperations.balance();
+		        	break;
+		        case "exit":
+		        	bye();
+		        	break;
+		        default:
+		        	String[] options = line.split(" ");
+		        	double amount;
+		        	switch (options[0]) {
+		        		case "balance":
+		        			amount = Double.parseDouble(options[1]);
+		        			if (accountOperations.getBalance() == 0) {
+		        				accountOperations.setBalance(amount);
+		        				System.out.println("New balance=" + accountOperations.getBalance());
+		        			}
+		        			break;
+				        case "getQuickBalance":
+				        	System.out.println("New balance=" + accountOperations.getBalance());
+				        	break;
+				        case "deposit":
+				        	amount = Double.parseDouble(options[1]);
+				    			accountOperations.setBalance(amount);
+				        	break;
+				        case "withdraw":
+				        	amount = Double.parseDouble(options[1]);
+				        	 accountOperations.setBalance(amount * (-1));
+				        	break;
+				        case "addinterest":
+				        	double percent = Double.parseDouble(options[1]);
+				        	accountOperations.addinginterest(percent);
+				        	break;
+				        case "memberInfo":
+				        	System.out.println(membersInfo);
+				        	break;
+
+					}
+		        	break;
+	        }
+			
+		} catch (NumberFormatException e) {
+			errorHandler("userCommand", "NumberFormatException", e);
+		} catch (ArrayIndexOutOfBoundsException e) {	// split command
+			errorHandler("userCommand", "ArrayIndexOutOfBoundsException", e);
+		}
 	}
 
 	public void userCommand(String line, boolean isCommand) {
@@ -133,58 +166,12 @@ public class BankAccount implements BasicMessageListener {
 				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
-				        	/*
-				        	 * // following adds theTransaction.command = “<Command name> <argument value>”; 
-				        	 *  (Ex: “deposit 500”)Transaction.unique_id = “<Client_instance_name> <outstanding_counter>” 
-				        	 */
-				           	executed_list.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
-				           	
-				           	/*
-				           	 * Printing the values to check if they have the right values
-				           	 */
-				           //	System.out.println("Values for testing " +executed_list.get(outstanding_counter).command + " " + executed_list.get(outstanding_counter).unique_id);
-				           	System.out.println("Value of outstanding_counter "+outstanding_counter);
-				           	/*
-				           	 * Assigning the value at zero index to collection and then clear() the executed_list
-				           	 * so next time someone deposits it gets on zero index and same index could be added again to
-				           	 * collection
-				           	 */
-				           	outstanding_collection.add(executed_list.get(outstanding_counter));
-				           	//executed_list.clear();
-				           	/*
-				           	 * printing the following to check if the collection's size increased or not
-				           	 */
-				           	System.out.println("From Collection " +outstanding_collection.get(outstanding_counter).command);
-				           	/*
-				           	 * I could not get the values from the collection to send to messageSending() method for some reason,
-				           	 * so I am defining defining a new list for extracting the values from Collection and sending them to 
-				           	 * messageSending(...) method, Why can't I get the values from collection ??
-				           	 */
-				           	
-				       
-				           	/*
-				           	 * I am also using outstanding_counter for accessing index i.e. usually the famous int variable i would do !
-				           	 */
-				           	System.out.println("From Collection value by  " +outstanding_collection.get(outstanding_counter).command);
-				           	
-				           	/*
-				           	 * next step should be to send collect.get(outstanding_counter).command to send and also 
-				           	 * use collect.get(outstanding_counter).unique_id or collect.get(outstanding_counter) to determine
-				           	 * which transaction are executed and which aren't, and this detail should be stored in a separate list/collection
-				           	 * for checkTxStatus and getHistory methods/commands
-				           	 */
-				           	
-				           	/*
-				           	 *  Following has (outstanding_counter-1) because outstanding_counter got incremented by outstanding_counter++
-				           	 * and we want the previous index value
-				           	 */
-				    		if (isCommand) {
-				    			newMessageSending(outstanding_collection.get(outstanding_counter).command);
-				    			System.out.println("Value of outstanding_counter, From isCommand "+outstanding_counter);
-				    			
-				    		}
-				    		else accountOperations.setBalance(amount);
-				    		outstanding_counter=outstanding_counter+1;
+				        	outstanding_collection.add(new Transaction("deposit "+ amount, memberName+outstanding_counter));
+				        	outstanding_counter=outstanding_counter+1;
+				        	
+				        	
+				        	executeTenSeconds(outstanding_collection);
+
 				        	break;
 				        case "withdraw":
 				        	amount = Double.parseDouble(options[1]);
@@ -209,6 +196,24 @@ public class BankAccount implements BasicMessageListener {
 		} catch (ArrayIndexOutOfBoundsException e) {	// split command
 			errorHandler("userCommand", "ArrayIndexOutOfBoundsException", e);
 		}
+	}
+	
+	
+	
+	private void executeTenSeconds(List<Transaction> localList) {
+     /*   try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+		for(int i=0;i<localList.size();i++) {
+			Transaction t=localList.get(i);
+		messageSending(localList.get(i).command);
+		executed_list.add(localList.get(i));
+		outstanding_collection.remove(t);
+		}
+		
 	}
 	private boolean initSpread(String host, int port, String groupName) {
 		Random randomGenerator = new Random();
@@ -260,7 +265,7 @@ public class BankAccount implements BasicMessageListener {
 			System.out.println("\t data: " + data.length + " bytes, sender: " + message.getSender() + ", type: " + message.getType());
 			System.out.println("\tcontent: " + content);
 			
-			userCommand(content, false);
+			userCommand(content);
 		}
 		else {
 			upDate("Receive another regular message");
