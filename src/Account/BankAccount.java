@@ -202,7 +202,7 @@ public class BankAccount implements BasicMessageListener {
 				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
-				        	outstanding_collection.add(new Transaction("deposit "+ amount, "uniqueid " + memberName+outstanding_counter));
+				        	outstanding_collection.add(new Transaction("deposit "+ amount, "UniqueID " + memberName+outstanding_counter));
 				        	//messageSending(outstanding_collection);
 				        	outstanding_counter=outstanding_counter+1;
 				        	
@@ -237,7 +237,7 @@ public class BankAccount implements BasicMessageListener {
 				        	}
 				        case "addinterest":
 				        	amount = Double.parseDouble(options[1]);
-				        	outstanding_collection.add(new Transaction("addinterest "+ amount,"uniqueid " +  memberName+outstanding_counter));
+				        	outstanding_collection.add(new Transaction("addinterest "+ amount,"UniqueID " +  memberName+outstanding_counter));
 				        	//messageSending(outstanding_collection);
 				        	outstanding_counter=outstanding_counter+1;
 				        	
@@ -252,16 +252,23 @@ public class BankAccount implements BasicMessageListener {
 				        	else messageSending(outstanding_collection);
 				        	break;
 				        case "getHistory":
-				        	System.out.println("Printing the History");
+				        	
+				        	
 				        	for(int i=0;i<executed_list.size();i++) {
 				        		
-				        		System.out.println(executed_list.get(i).order_counter+" - "+ executed_list.get(i).command+
-				        				"\t\tUnique ID is " +executed_list.get(i).order_counter+" - "+ executed_list.get(i).unique_id);
+				        		System.out.println("order_Counter is "+executed_list.get(i).order_counter+"-Executed Transactions- "+ executed_list.get(i).command+
+				        				"\t"+ executed_list.get(i).unique_id);
 				        		
 				        	}
+
+				        	System.out.println("Pending Transactions ");
+				        
 				        	for(int i=0;i<outstanding_collection.size();i++) {
-				        		System.out.println("Pending Transactions are "+ outstanding_collection.get(i).command);		        		
+				        		System.out.println("Pending Transactions "+outstanding_collection.get(i).command +" With "+outstanding_collection.get(i).unique_id);
 				        	}
+				        	
+
+				        	
 				        	
 				        	break;
 				        case "cleanHistory":
