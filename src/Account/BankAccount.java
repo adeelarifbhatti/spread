@@ -40,7 +40,7 @@ public class BankAccount implements BasicMessageListener {
 		upDate("New BankAccount Replica host:" + host + ", accountname:" + accountname + ", numReplicas: " + instances);	
 		
 		// Init spread
-		if ( initSpread(host, 4803, accountname) ) {
+		if ( initSpread(host, 4809, accountname) ) {
 		
 			// Init variables
 			accountOperations.setBalance(0.0);
@@ -52,7 +52,7 @@ public class BankAccount implements BasicMessageListener {
 
 	
 	private void upDate(String message) {
-		System.out.println("[Info] " + message);
+	//	System.out.println("[Info] " + message);
 	}
 	private void bye() {
 		try {
@@ -110,9 +110,6 @@ public class BankAccount implements BasicMessageListener {
 		        				System.out.println("New balance=" + accountOperations.getBalance());
 		        			}
 		        			break;
-				        case "getQuickBalance":
-				        	System.out.println("New balance=" + accountOperations.getBalance());
-				        	break;
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				    			accountOperations.setBalance(amount);
@@ -120,6 +117,7 @@ public class BankAccount implements BasicMessageListener {
 					        	Transaction t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
 					        	String checkUniqueID=options[2]+" "+options[3];
 					           	executed_list.add(t);
+					           	order_counter=order_counter+1;
 					           	System.out.println(executed_list.get(0).command+" "+executed_list.get(0).unique_id);
 					           	for (int i=0;i<outstanding_collection.size();i++) {
 						           	if(checkUniqueID.equals(outstanding_collection.get(i).unique_id)){
@@ -142,6 +140,7 @@ public class BankAccount implements BasicMessageListener {
 				        	t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
 				        	String checkUniqueID2=options[2]+" "+options[3];
 				        	executed_list.add(t);
+				        	order_counter=order_counter+1;
 				           	for (int i=0;i<outstanding_collection.size();i++) {
 					           	if(checkUniqueID2.equals(outstanding_collection.get(i).unique_id)){
 					           		outstanding_collection.remove(outstanding_collection.get(i));
@@ -151,11 +150,12 @@ public class BankAccount implements BasicMessageListener {
 				        	System.out.println("Size of the Collection from addinterest "+outstanding_collection.size());
 				        	break;
 				        case "getHistory":
+				        	
 				        	for(int i=0;i<executed_list.size();i++) {
-				        		System.out.println("Executed Transactions are "+ executed_list.get(i).unique_id);		        		
+				        		System.out.println(i+" - "+ executed_list.get(i).command);		        		
 				        	}
 				        	for(int i=0;i<outstanding_collection.size();i++) {
-				        		System.out.println("Pending Transactions are "+ outstanding_collection.get(i).unique_id);		        		
+				        		System.out.println("Pending Transactions are "+ outstanding_collection.get(i).command);		        		
 				        	}
 				        	break;
 				        case "memberInfo":
@@ -164,8 +164,8 @@ public class BankAccount implements BasicMessageListener {
 				        case "cleanHistory":
 				        	executed_list.clear();
 				        	break;
-				        	default:
-				        		System.out.println(" Nothing Matched " + options[0]);
+				        	/*default:
+				        		System.out.println(options[0]+ ", Please enter the right command");*/
 
 					}
 		        	break;
@@ -261,6 +261,9 @@ public class BankAccount implements BasicMessageListener {
 				        	System.out.println("Removing the History");
 				        	messageSending("cleanHistory");
 				        	break;
+				        default:
+				        	System.out.println("Please enter the right command");
+
 
 					}
 		        	break;
@@ -296,13 +299,14 @@ public class BankAccount implements BasicMessageListener {
 		    new java.util.TimerTask() {
 		        @Override
 		        public void run() {
-		        	System.out.println("The Size of the outstanding_collection is "+outstanding_collection.size());
+		        	//System.out.println("The Size of the outstanding_collection is "+outstanding_collection.size());
 		            messageSending(outstanding_collection);
 		        }
 		    }, 
 		    10000 
 		);
 }
+	
 		private void messageSending(List<Transaction> localList) {
 			SpreadMessage message2 = new SpreadMessage();
 			message2.setSafe();
@@ -312,7 +316,7 @@ public class BankAccount implements BasicMessageListener {
 				String content2 =(String)localList.get(i).command+ " "+localList.get(i).unique_id;
 				message2.setData(new String(content2).getBytes());
 	
-			System.out.println("New balance=" + accountOperations.getBalance());
+			//System.out.println("New balance=" + accountOperations.getBalance());
 			}
 			
 			try {
@@ -373,8 +377,8 @@ public class BankAccount implements BasicMessageListener {
 			byte data[] = message.getData();
 			String content = new String(data);
 			
-			System.out.println("\t data: " + data.length + " bytes, sender: " + message.getSender() + ", type: " + message.getType());
-			System.out.println("\tcontent: " + content);
+			//System.out.println("\t data: " + data.length + " bytes, sender: " + message.getSender() + ", type: " + message.getType());
+			//System.out.println("\tcontent: " + content);
 			
 			userCommand(content);
 		}
