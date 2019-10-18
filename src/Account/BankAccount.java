@@ -114,7 +114,7 @@ public class BankAccount implements BasicMessageListener {
 				        	amount = Double.parseDouble(options[1]);
 				    			accountOperations.setBalance(amount);
 				    			
-					        	Transaction t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+					        	Transaction t= new Transaction(order_counter,options[0]+" "+options[1],options[2]+" "+options[3]);
 					        	String checkUniqueID=options[2]+" "+options[3];
 					           	executed_list.add(t);
 					           	order_counter=order_counter+1;
@@ -137,7 +137,7 @@ public class BankAccount implements BasicMessageListener {
 				        	System.out.println("From Interest  from start #########"+ options[1]+" "+options[2]);
 				        	double percent = Double.parseDouble(options[1]);
 				        	accountOperations.addinginterest(percent);
-				        	t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+				        	t= new Transaction(order_counter,options[0]+" "+options[1],options[2]+" "+options[3]);
 				        	String checkUniqueID2=options[2]+" "+options[3];
 				        	executed_list.add(t);
 				        	order_counter=order_counter+1;
@@ -152,7 +152,7 @@ public class BankAccount implements BasicMessageListener {
 				        case "getHistory":
 				        	
 				        	for(int i=0;i<executed_list.size();i++) {
-				        		System.out.println(i+" - "+ executed_list.get(i).command);		        		
+				        		System.out.println(executed_list.get(i).order_counter+" - "+ executed_list.get(i).command);		        		
 				        	}
 				        	for(int i=0;i<outstanding_collection.size();i++) {
 				        		System.out.println("Pending Transactions are "+ outstanding_collection.get(i).command);		        		
