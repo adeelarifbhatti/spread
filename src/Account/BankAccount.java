@@ -161,6 +161,9 @@ public class BankAccount implements BasicMessageListener {
 				        case "memberInfo":
 				        	System.out.println(membersInfo);
 				        	break;
+				        case "cleanHistory":
+				        	executed_list.clear();
+				        	break;
 				        	default:
 				        		System.out.println(" Nothing Matched " + options[0]);
 
@@ -253,6 +256,10 @@ public class BankAccount implements BasicMessageListener {
 				        case "getHistory":
 				        	System.out.println("Printing the History");
 				        	messageSending("getHistory");
+				        	break;
+				        case "cleanHistory":
+				        	System.out.println("Removing the History");
+				        	messageSending("cleanHistory");
 				        	break;
 
 					}
