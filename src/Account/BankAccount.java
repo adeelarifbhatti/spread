@@ -33,6 +33,7 @@ public class BankAccount implements BasicMessageListener {
 	private List<Transaction> executed_list= new ArrayList<Transaction>();
 	private List<Transaction> outstanding_collection = new ArrayList<Transaction>();
 	private int order_counter=0, outstanding_counter=0;
+	private String members=null;
 	private ArrayList<String> membersInfo = new ArrayList<>();
 	private AccountOperations accountOperations=new AccountOperations();
 	
@@ -159,7 +160,11 @@ public class BankAccount implements BasicMessageListener {
 				        	}
 				        	break;
 				        case "memberInfo":
-				        	System.out.println(membersInfo);
+				        	if(!membersInfo.contains(options[1])) {
+				        		membersInfo.add(options[1]);
+				        	}
+				        	
+				        	
 				        	break;
 				        case "cleanHistory":
 				        	executed_list.clear();
@@ -399,14 +404,16 @@ public class BankAccount implements BasicMessageListener {
 				
 				upDate("Receive a membership message for group " + group + " with " + members.length + " members:");
 				for(SpreadGroup member : members) {
-					System.out.println("\t\t" + member);
+					System.out.println( member);
+					
 				}
 				
 				if(info.isCausedByJoin()) {
-					System.out.println("\tJOIN of " + info.getJoined());
-					membersInfo.add(info.getJoined().toString());
+					//System.out.println("\tJOIN of " + info.getJoined());
+					
 					//					System.out.println("joind=" + joined.toString() + ", myName:" + privateName);	
 					CharSequence cs = memberName;
+					messageSending("memberInfo "+memberName.toString());
 					if (!info.getJoined().toString().contains(cs)) {
 						messageSending("balance " + accountOperations.getBalance());
 					}
