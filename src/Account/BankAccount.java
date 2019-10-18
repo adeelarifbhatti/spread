@@ -125,7 +125,7 @@ public class BankAccount implements BasicMessageListener {
 					           	}
 
 					           	}
-					        	System.out.println("Size of the Collection from Deposit "+outstanding_collection.size());
+					        	//System.out.println("Size of the Collection from Deposit "+outstanding_collection.size());
 					        	break;
 				        	
 				        case "withdraw":
@@ -147,7 +147,7 @@ public class BankAccount implements BasicMessageListener {
 				           	}
 
 				           	}
-				        	System.out.println("Size of the Collection from addinterest "+outstanding_collection.size());
+				        	//System.out.println("Size of the Collection from addinterest "+outstanding_collection.size());
 				        	break;
 				        case "getHistory":
 				        	
