@@ -205,7 +205,7 @@ public class BankAccount implements BasicMessageListener {
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				        	outstanding_collection.add(new Transaction("deposit "+ amount, "uniqueid " + memberName+outstanding_counter));
-				        	messageSending(outstanding_collection);
+				        	//messageSending(outstanding_collection);
 				        	outstanding_counter=outstanding_counter+1;
 				        	
 				        	
@@ -240,7 +240,7 @@ public class BankAccount implements BasicMessageListener {
 				        case "addinterest":
 				        	amount = Double.parseDouble(options[1]);
 				        	outstanding_collection.add(new Transaction("addinterest "+ amount,"uniqueid " +  memberName+outstanding_counter));
-				        	messageSending(outstanding_collection);
+				        	//messageSending(outstanding_collection);
 				        	outstanding_counter=outstanding_counter+1;
 				        	
 				        	
@@ -271,7 +271,7 @@ public class BankAccount implements BasicMessageListener {
 		} catch (ArrayIndexOutOfBoundsException e) {	// split command
 			errorHandler("userCommand", "ArrayIndexOutOfBoundsException", e);
 		}
-	}
+	
 	
 	
 	
@@ -292,6 +292,17 @@ public class BankAccount implements BasicMessageListener {
 	}
 	*/
 		
+	new java.util.Timer().schedule( 
+		    new java.util.TimerTask() {
+		        @Override
+		        public void run() {
+		        	System.out.println("The Size of the outstanding_collection is "+outstanding_collection.size());
+		            messageSending(outstanding_collection);
+		        }
+		    }, 
+		    10000 
+		);
+}
 		private void messageSending(List<Transaction> localList) {
 			SpreadMessage message2 = new SpreadMessage();
 			message2.setSafe();
