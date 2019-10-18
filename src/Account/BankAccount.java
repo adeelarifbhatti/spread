@@ -116,9 +116,17 @@ public class BankAccount implements BasicMessageListener {
 				        case "deposit":
 				        	amount = Double.parseDouble(options[1]);
 				    			accountOperations.setBalance(amount);
+				    			
 					        	Transaction t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+					        	String checkUniqueID=options[2]+" "+options[3];
 					           	executed_list.add(t);
-					        	outstanding_collection.remove(t);
+					           	System.out.println(executed_list.get(0).command+" "+executed_list.get(0).unique_id);
+					           	for (int i=0;i<outstanding_collection.size();i++) {
+						           	if(checkUniqueID.equals(outstanding_collection.get(i).unique_id)){
+						           		outstanding_collection.remove(outstanding_collection.get(i));
+					           	}
+
+					           	}
 					        	System.out.println("Size of the Collection from Deposit "+outstanding_collection.size());
 					        	break;
 				        	
@@ -132,8 +140,14 @@ public class BankAccount implements BasicMessageListener {
 				        	double percent = Double.parseDouble(options[1]);
 				        	accountOperations.addinginterest(percent);
 				        	t= new Transaction(options[0]+" "+options[1],options[2]+" "+options[3]);
+				        	String checkUniqueID2=options[2]+" "+options[3];
 				        	executed_list.add(t);
-				        	outstanding_collection.remove(t);
+				           	for (int i=0;i<outstanding_collection.size();i++) {
+					           	if(checkUniqueID2.equals(outstanding_collection.get(i).unique_id)){
+					           		outstanding_collection.remove(outstanding_collection.get(i));
+				           	}
+
+				           	}
 				        	System.out.println("Size of the Collection from addinterest "+outstanding_collection.size());
 				        	break;
 				        case "getHistory":
