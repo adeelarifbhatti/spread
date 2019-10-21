@@ -249,7 +249,10 @@ public class BankAccount implements BasicMessageListener {
 				        case "getSyncedBalance":
 				        	if(outstanding_collection.isEmpty())
 				        	System.out.println("New balance=" + accountOperations.getBalance());
-				        	else messageSending(outstanding_collection);
+				        	else {
+				        		messageSending(outstanding_collection);
+				        		System.out.println("New balance=" + accountOperations.getBalance());
+				        	}
 				        	break;
 				        case "getHistory":
 				        	
